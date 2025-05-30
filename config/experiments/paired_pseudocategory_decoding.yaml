@@ -1,0 +1,363 @@
+name: "paired_category_decoding"
+scheme:
+  target: "pseudocategory"
+  cross_validation_scheme: "paired"
+  n_folds: 6
+
+dataset: !call src.experiments.experiment_loader.load_dataset_cfg kwargs={'dataset_id':'SUDB'}
+n_classes: &n_classes 6
+n_channels: &n_channels 124
+n_time_points: &n_time_points 32
+
+models:
+  ## Primary models
+  LDA:
+    id: "LDA"
+    cpu_only: true
+    class: !eval src.models.basemodel.ScikitModel
+    arch_config:
+      clf: !eval sklearn.discriminant_analysis.LinearDiscriminantAnalysis
+      solver: 'svd'
+    features:
+      - "EEG"
+    trainer_config:
+      criterion: !eval torch.nn.CrossEntropyLoss
+    search_space:
+      n_components: !eval list(range(3, 201, 1))
+      transforms:
+          - EEG:
+              method: !eval src.data.transforms.PCA
+    search_method: !eval src.experiments.search.grid_search
+
+  ADCNN:
+    id: "ADCNN"
+    class: !eval src.models.ADCNN
+    arch_config:
+      n_classes: *n_classes
+      n_channels: *n_channels
+      n_time_points: *n_time_points
+    features:
+      - "EEG"
+    trainer_config:
+      criterion: !eval torch.nn.CrossEntropyLoss
+    search_space:
+      optimizer: 
+        - !eval torch.optim.AdamW
+      max_epochs: 30
+      batch_size: [128]
+      lr: [0.0001, 0.001, 0.01]
+      weight_decay: [0.0001, 0.001, 0.01, 0.1]
+      transforms:
+          - EEG:
+              method: !eval src.data.transforms.Standardize
+              kwargs:
+                dim: (0, 2)
+    search_method: !eval src.experiments.search.hierarchical_grid_search
+
+  AW1DCNN:
+    id: "AW1DCNN"
+    class: !eval src.models.AW1DCNN
+    arch_config:
+      n_classes: *n_classes
+      n_channels: *n_channels
+    features:
+      - "EEG"
+    trainer_config:
+      criterion: !eval torch.nn.CrossEntropyLoss
+    search_space:
+      optimizer: 
+        - !eval torch.optim.AdamW
+      max_epochs: 30
+      batch_size: [128]
+      lr: [0.0001, 0.001, 0.01]
+      weight_decay: [0.0001, 0.001, 0.01, 0.1]
+      transforms:
+        - EEG:
+            method: !eval src.data.transforms.Standardize
+            kwargs:
+              dim: (0, 2)
+    search_method: !eval src.experiments.search.hierarchical_grid_search
+
+  RLSTM:
+    id: "RLSTM"
+    class: !eval src.models.RLSTM
+    arch_config:
+      n_classes: *n_classes
+      n_channels: *n_channels
+      n_time_points: *n_time_points
+      hidden_dim: 16
+    features:
+      - "EEG"
+    trainer_config:
+      criterion: !eval torch.nn.CrossEntropyLoss
+    search_space:
+      optimizer: 
+        - !eval torch.optim.AdamW
+      max_epochs: 30
+      batch_size: [128]
+      lr: [0.0001, 0.001, 0.01]
+      weight_decay: [0.0001, 0.001, 0.01, 0.1]
+      transforms:
+          - EEG:
+              method: !eval src.data.transforms.Standardize
+              kwargs:
+                dim: (0, 2)
+    search_method: !eval src.experiments.search.hierarchical_grid_search
+
+  EEGCT-Slim:
+    id: "EEGCT-Slim"
+    class: !eval src.models.EEGCT
+    arch_config:
+      n_classes: *n_classes
+      n_features: 8
+      n_heads: 4
+      hidden_dim_1: 16
+      hidden_dim_2: 256
+      n_patches: 49
+      n_time_points: *n_time_points
+    features:
+      - "AEP"
+    trainer_config:
+      criterion: !eval torch.nn.CrossEntropyLoss
+      scheduler: !eval torch.optim.lr_scheduler.MultiStepLR
+    search_space:
+      optimizer: 
+        - !eval torch.optim.AdamW
+      max_epochs: 30
+      batch_size: [32]
+      lr: [0.0001, 0.001, 0.01]
+      weight_decay: [0.0001, 0.001, 0.01, 0.1]
+      gamma: [0.1, 0.2, 0.5]
+      milestones: !eval (list(range(15, 55, 5)),)
+    search_method: !eval src.experiments.search.hierarchical_grid_search
+
+  EEGCT-Wide:
+    id: "EEGCT-Wide"
+    class: !eval src.models.EEGCT
+    arch_config:
+      n_classes: *n_classes
+      n_features: 72
+      n_heads: 12
+      hidden_dim_1: 432
+      hidden_dim_2: 768
+      n_patches: 49
+      n_time_points: *n_time_points
+    features:
+      - "AEP"
+    trainer_config:
+      criterion: !eval torch.nn.CrossEntropyLoss
+      scheduler: !eval torch.optim.lr_scheduler.MultiStepLR
+    search_space:
+      optimizer: 
+        - !eval torch.optim.AdamW
+      max_epochs: 30
+      batch_size: [32]
+      lr: [0.0001, 0.001, 0.01]
+      weight_decay: [0.0001, 0.001, 0.01, 0.1]
+      gamma: [0.1, 0.2, 0.5]
+      milestones: !eval (list(range(15, 55, 5)),)
+    search_method: !eval src.experiments.search.hierarchical_grid_search
+
+  STST:
+    id: "STST"
+    class: !eval src.models.STST
+    arch_config:
+      n_classes: 6
+      n_channels: 124
+      n_time_points: 32
+      n_spe_channels: 25
+      n_bands: 5
+    features:
+      - "EEG"
+      - "ST"
+    trainer_config:
+      criterion: !eval torch.nn.CrossEntropyLoss
+    search_space:
+      optimizer: 
+        - !eval torch.optim.AdamW
+      max_epochs: 30
+      batch_size: [128]
+      lr: [0.0001, 0.001, 0.01]
+      weight_decay: [0.0001, 0.001, 0.01, 0.1]
+      transforms:
+          - EEG:
+              method: !eval src.data.transforms.Standardize
+              kwargs:
+                dim: (0, 2)
+    search_method: !eval src.experiments.search.hierarchical_grid_search
+
+  TSCNN:
+    id: "TSCNN"
+    class: !eval src.models.TSCNN
+    arch_config:
+      n_classes: *n_classes
+      n_channels: *n_channels
+      n_time_points: *n_time_points
+      hidden_dim_1: 32
+      hidden_dim_2: 1000
+      time_kernel: 5
+      pool_kernel: 2
+    features:
+      - "EEG"
+      - "WPLI"
+    trainer_config:
+      criterion: !eval torch.nn.CrossEntropyLoss
+    search_space:
+      optimizer: 
+        - !eval torch.optim.AdamW
+      max_epochs: 30
+      batch_size: [32]
+      lr: [0.001]
+      weight_decay: [0.1]
+      transforms:
+      - EEG:
+          method: !eval src.data.transforms.Standardize
+          kwargs:
+            dim: (0, 2)
+        WPLI:
+          method: !eval src.data.transforms.COO
+          kwargs:
+            tau_dist: 0.2
+            tau_fc: 0.8
+    search_method: !eval src.experiments.search.hierarchical_grid_search
+    
+  ## Additional models
+  LR:
+    id: "LR"
+    class: !eval src.models.LogisticRegression
+    arch_config:
+      n_classes: *n_classes
+      n_features: !eval 124*32
+    features:
+      - "EEG"
+    trainer_config:
+      criterion: !eval torch.nn.CrossEntropyLoss
+    search_space:
+      optimizer: 
+        - !eval torch.optim.AdamW
+      max_epochs: 30
+      batch_size: [128]
+      lr: [0.0001, 0.001, 0.01]
+      weight_decay: [0.0001, 0.001, 0.01, 0.1]
+      transforms:
+          - EEG:
+              method: !eval src.data.transforms.Standardize
+              kwargs:
+                dim: (0, 2)
+    search_method: !eval src.experiments.search.hierarchical_grid_search
+
+  SVC:
+    id: "SVC"
+    cpu_only: true
+    class: !eval src.models.basemodel.ScikitModel
+    arch_config:
+      clf: !eval sklearn.svm.SVC
+      kernel: 'rbf'
+      gamma: 'scale'
+    features:
+      - "EEG"
+    trainer_config:
+      criterion: !eval torch.nn.CrossEntropyLoss
+    search_space:
+      transforms:
+          - EEG:
+              method: !eval src.data.transforms.Standardize
+              kwargs:
+                dim: (0, 2)
+      C: [0.001, 0.01, 0.1, 1, 10, 100, 1000]
+    search_method: !eval src.experiments.search.grid_search
+
+  kNN:
+    id: "kNN"
+    class: !eval src.models.kNN
+    arch_config:
+      n_classes: *n_classes
+      metric: 'euclidean'
+    features:
+      - "EEG"
+    trainer_config:
+      criterion: !eval torch.nn.CrossEntropyLoss
+    search_space:
+      batch_size: [512]
+      k: !eval list(range(1, 63, 1))
+      transforms:
+          - EEG:
+              method: !eval src.data.transforms.Standardize
+              kwargs:
+                dim: (0, 2)
+    search_method: !eval src.experiments.search.grid_search
+
+  EEGNet:
+    id: "EEGNet"
+    class: !eval src.models.EEGNet
+    arch_config:
+      n_classes: *n_classes
+      n_channels: *n_channels
+      n_time_points: *n_time_points
+    features:
+      - "EEG"
+    trainer_config:
+      criterion: !eval torch.nn.CrossEntropyLoss
+    search_space:
+      optimizer: 
+        - !eval torch.optim.AdamW
+      max_epochs: 30
+      batch_size: [128]
+      lr: [0.0001, 0.001, 0.01]
+      weight_decay: [0.0001, 0.001, 0.01]
+      transforms:
+          - EEG:
+              method: !eval src.data.transforms.Standardize
+              kwargs:
+                dim: (0, 2)
+    search_method: !eval src.experiments.search.hierarchical_grid_search
+
+  ShallowConvNet:
+    id: "ShallowConvNet"
+    class: !eval src.models.ShallowConvNet
+    arch_config:
+      n_classes: *n_classes
+      n_channels: *n_channels
+      n_time_points: *n_time_points
+    features:
+      - "EEG"
+    trainer_config:
+      criterion: !eval torch.nn.CrossEntropyLoss
+    search_space:
+      optimizer: 
+        - !eval torch.optim.AdamW
+      max_epochs: 30
+      batch_size: [128]
+      lr: [0.0001, 0.001, 0.01]
+      weight_decay: [0.0001, 0.001, 0.01]
+      transforms:
+          - EEG:
+              method: !eval src.data.transforms.Standardize
+              kwargs:
+                dim: (0, 2)
+    search_method: !eval src.experiments.search.hierarchical_grid_search
+
+  DeepConvNet:
+    id: "DeepConvNet"
+    class: !eval src.models.DeepConvNet
+    arch_config:
+      n_classes: *n_classes
+      n_channels: *n_channels
+      n_time_points: *n_time_points
+    features:
+      - "EEG"
+    trainer_config:
+      criterion: !eval torch.nn.CrossEntropyLoss
+    search_space:
+      optimizer: 
+        - !eval torch.optim.AdamW
+      max_epochs: 30
+      batch_size: [128]
+      lr: [0.0001, 0.001, 0.01]
+      weight_decay: [0.0001, 0.001, 0.01]
+      transforms:
+          - EEG:
+              method: !eval src.data.transforms.Standardize
+              kwargs:
+                dim: (0, 2)
+    search_method: !eval src.experiments.search.hierarchical_grid_search
