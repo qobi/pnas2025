@@ -41,7 +41,7 @@ models:
     trainer_config:
       criterion: !eval torch.nn.CrossEntropyLoss
     search_space:
-      optimizer: 
+      optimizer:
         - !eval torch.optim.AdamW
       max_epochs: 30
       batch_size: [128]
@@ -65,7 +65,7 @@ models:
     trainer_config:
       criterion: !eval torch.nn.CrossEntropyLoss
     search_space:
-      optimizer: 
+      optimizer:
         - !eval torch.optim.AdamW
       max_epochs: 30
       batch_size: [128]
@@ -91,7 +91,7 @@ models:
     trainer_config:
       criterion: !eval torch.nn.CrossEntropyLoss
     search_space:
-      optimizer: 
+      optimizer:
         - !eval torch.optim.AdamW
       max_epochs: 30
       batch_size: [128]
@@ -121,7 +121,7 @@ models:
       criterion: !eval torch.nn.CrossEntropyLoss
       scheduler: !eval torch.optim.lr_scheduler.MultiStepLR
     search_space:
-      optimizer: 
+      optimizer:
         - !eval torch.optim.AdamW
       max_epochs: 30
       batch_size: [32]
@@ -148,7 +148,7 @@ models:
       criterion: !eval torch.nn.CrossEntropyLoss
       scheduler: !eval torch.optim.lr_scheduler.MultiStepLR
     search_space:
-      optimizer: 
+      optimizer:
         - !eval torch.optim.AdamW
       max_epochs: 30
       batch_size: [32]
@@ -162,7 +162,7 @@ models:
     id: "STST"
     class: !eval src.models.STST
     arch_config:
-      n_classes: 6
+      n_classes: *n_classes
       n_channels: 124
       n_time_points: 32
       n_spe_channels: 25
@@ -173,7 +173,7 @@ models:
     trainer_config:
       criterion: !eval torch.nn.CrossEntropyLoss
     search_space:
-      optimizer: 
+      optimizer:
         - !eval torch.optim.AdamW
       max_epochs: 30
       batch_size: [128]
@@ -203,7 +203,7 @@ models:
     trainer_config:
       criterion: !eval torch.nn.CrossEntropyLoss
     search_space:
-      optimizer: 
+      optimizer:
         - !eval torch.optim.AdamW
       max_epochs: 30
       batch_size: [32]
@@ -220,7 +220,7 @@ models:
             tau_dist: 0.2
             tau_fc: 0.8
     search_method: !eval src.experiments.search.hierarchical_grid_search
-    
+
   ## Additional models
   LR:
     id: "LR"
@@ -233,7 +233,7 @@ models:
     trainer_config:
       criterion: !eval torch.nn.CrossEntropyLoss
     search_space:
-      optimizer: 
+      optimizer:
         - !eval torch.optim.AdamW
       max_epochs: 30
       batch_size: [128]
@@ -299,7 +299,7 @@ models:
     trainer_config:
       criterion: !eval torch.nn.CrossEntropyLoss
     search_space:
-      optimizer: 
+      optimizer:
         - !eval torch.optim.AdamW
       max_epochs: 30
       batch_size: [128]
@@ -324,7 +324,7 @@ models:
     trainer_config:
       criterion: !eval torch.nn.CrossEntropyLoss
     search_space:
-      optimizer: 
+      optimizer:
         - !eval torch.optim.AdamW
       max_epochs: 30
       batch_size: [128]
@@ -349,7 +349,7 @@ models:
     trainer_config:
       criterion: !eval torch.nn.CrossEntropyLoss
     search_space:
-      optimizer: 
+      optimizer:
         - !eval torch.optim.AdamW
       max_epochs: 30
       batch_size: [128]
