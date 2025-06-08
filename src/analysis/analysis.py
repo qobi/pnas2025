@@ -22,21 +22,21 @@ plt.rcParams["font.family"] = "serif"
 plt.rcParams["font.serif"] = "tgheros"
 
 MODELS = {'primary': [
-            'LDA', 
-            'ADCNN', 
-            'AW1DCNN', 
-            'EEGCT-Slim', 
-            'EEGCT-Wide', 
-            'RLSTM', 
-            'STST', 
+            'LDA',
+            'ADCNN',
+            'AW1DCNN',
+            'EEGCT-Slim',
+            'EEGCT-Wide',
+            'RLSTM',
+            'STST',
             'TSCNN'
             ],
           'additional': [
-            'LogisticRegression',
-            'kNN', 
-            'SVC', 
-            'ShallowConvNet', 
-            'DeepConvNet', 
+            'LR',
+            'kNN',
+            'SVC',
+            'ShallowConvNet',
+            'DeepConvNet',
             'EEGNet'
             ]
           }
@@ -56,9 +56,9 @@ def get_fold_level_results(df):
     df = df.groupby(['model', 'subject', 'fold_idx', 'partition']).agg(accuracy=('correct', 'mean')).reset_index()
     df['accuracy'] = df['accuracy'] * 100
     df = df.pivot_table(index=['model', 'subject', 'fold_idx'],
-                        columns='partition', 
+                        columns='partition',
                         values='accuracy').reset_index()
-    df['bias'] = df['confounded_test'] - df['unconfounded_test'] 
+    df['bias'] = df['confounded_test'] - df['unconfounded_test']
     return df
 
 def get_subject_level_results(df):
@@ -89,20 +89,20 @@ def get_subject_level_category_results(df):
     df = df.groupby(['model', 'subject', 'partition', 'labels']).agg(accuracy=('correct', 'mean')).reset_index()
     df['accuracy'] = df['accuracy'] * 100
     df = df.pivot_table(index=['model', 'subject', 'labels'],
-                        columns='partition', 
+                        columns='partition',
                         values='accuracy').reset_index()
     df['category'] = df['labels'].map(CATEGORY_MAP)
-    df['bias'] = df['confounded_test'] - df['unconfounded_test'] 
+    df['bias'] = df['confounded_test'] - df['unconfounded_test']
     return df
 
 def plot_bias_boxplot_by_model_and_subject(df, model_type='primary', path=None):
-    
+
     bias_df = get_fold_level_results(df)
 
     bias_df = bias_df[bias_df['model'].isin(MODELS[model_type])]
     fig, ax = plt.subplots(figsize=(12, 4), constrained_layout=True)
     ax.grid(which='both', axis='y', linestyle='-', linewidth=0.5)
-    
+
     ref_line = ax.axhline(0, color='black', linewidth=2, linestyle='--', zorder=2)
 
 
@@ -119,13 +119,13 @@ def plot_bias_boxplot_by_model_and_subject(df, model_type='primary', path=None):
                                     )
     ref_legend = fig.legend(title='Reference', loc='upper left', fontsize=14, title_fontsize='x-large',
         handles=[ref_line], labels=['No bias'], bbox_to_anchor=(0.075, 0.99))
-    
+
     lower_bound, upper_bound = bias_df['bias'].min(), bias_df['bias'].max()
     lower_bound, upper_bound = int(np.floor(lower_bound / 5 +1))* 5, int(np.ceil(upper_bound / 5)) * 5
 
     ax.set_ylabel('Absolute bias (\%)', fontsize=18, labelpad=10)
     ax.set_yticks(np.arange(lower_bound, upper_bound, 5), ['{:d}\%'.format(x) for x in np.arange(lower_bound, upper_bound, 5)])
-    
+
     ax.set_xticklabels([f'\\Large {x}' for x in MODELS[model_type]])
     ax.tick_params(axis='y', labelsize=14)
     ax.set_xlabel("")
@@ -153,9 +153,9 @@ def test_bias_significance(df, alpha=0.05):
         bias_test_df.append({'model': model,
                              'estimate': estimate, 'standard_error': se,
                              'test_statistic': ttest.statistic, 'p_value': p_value, 'df': df,})
-        
+
     bias_test_df = pd.DataFrame(bias_test_df)
-    
+
     _, p_value_corrected, _, alpha_adjusted = multipletests(bias_test_df['p_value'], alpha=alpha, method='holm')
     bias_test_df['p_value_corrected'] = p_value_corrected
     bias_test_df['significance'] = bias_test_df['p_value_corrected'].apply(lambda x: '***' if x < 0.001 else '**' if x < 0.01 else '*' if x < 0.05 else '')
@@ -235,7 +235,7 @@ def plot_bias_accuracy_scatter_by_category(bias_df, path=None):
     g.set_ylabels('\Huge Bias (\%)', labelpad=10)
     # Add slope and intercept of the regression line to the title
     g.set_titles(col_template="\Huge {col_name}")
-    # set xticks 
+    # set xticks
     g.set(xticks=np.arange(20, 81, 20), yticks=np.arange(0, 21, 5))
     g.set_xticklabels(['\Huge {:d}\%'.format(x) for x in np.arange(20, 81, 20)])
     g.set_yticklabels(['\Huge {:d}\%'.format(x) for x in np.arange(0, 21, 5)])
@@ -249,9 +249,9 @@ def plot_bias_accuracy_point_by_category(bias_df, path=None):
     order = bias_df.groupby('category').agg(unconfounded_test=('unconfounded_test', 'mean')).sort_values('unconfounded_test').index
 
     fig, ax = plt.subplots(2, 1, figsize=(12, 4), constrained_layout=True, sharex=True)
-    sns.pointplot(data=bias_df, x='category', y='unconfounded_test', order = order, linewidth=2, ax=ax[0], markersize=10, linestyle='none', errorbar=None, legend=False, 
+    sns.pointplot(data=bias_df, x='category', y='unconfounded_test', order = order, linewidth=2, ax=ax[0], markersize=10, linestyle='none', errorbar=None, legend=False,
                 color=sns.color_palette()[0])
-    sns.pointplot(data=bias_df, x='category', y='bias', order = order, linewidth=2, ax=ax[1], markersize=10, linestyle='none', errorbar=None, legend=False, 
+    sns.pointplot(data=bias_df, x='category', y='bias', order = order, linewidth=2, ax=ax[1], markersize=10, linestyle='none', errorbar=None, legend=False,
                 color=sns.color_palette()[1])
 
     ax[0].grid(which='both', axis='y', linestyle='-', linewidth=0.5)
@@ -276,7 +276,7 @@ def plot_bias_accuracy_point_by_category(bias_df, path=None):
 def get_confusion_matrix(df, partition):
     cm = df.groupby(['partition', 'category', 'category_pred']).size().reset_index(name='count')
     cm = cm.pivot_table(index=['partition', 'category'],
-                        columns='category_pred', 
+                        columns='category_pred',
                         values='count', fill_value=0).reset_index()
     cm = cm[cm['partition'] == partition].set_index('category').drop(columns='partition', axis=1)
     cm = cm.div(cm.sum(axis=1), axis=0).loc[CATEGORY_MAP.values(), CATEGORY_MAP.values()]
@@ -286,7 +286,7 @@ def get_confusion_matrix(df, partition):
 def plot_confusion_matrices_by_model(df, dir=False):
     for model in MODELS['primary'] + MODELS['additional']:
         model_df = df[df['model'] == model]
-        
+
         unconfounded_cm = get_confusion_matrix(model_df, 'unconfounded_test')
         confounded_cm = get_confusion_matrix(model_df, 'confounded_test')
 
@@ -328,7 +328,7 @@ def test_accuracy_significance(df, alpha=0.05):
             se = model_df[partition].std() / np.sqrt(len(model_df))
             ttest = ttest_1samp(model_df[partition], 100/12)
             p_value = ttest.pvalue
-            accuracy_test_df.append({'model': model, 
+            accuracy_test_df.append({'model': model,
                                      'partition': partition,
                                      'estimate': estimate, 'standard_error': se,
                                      'test_statistic': ttest.statistic, 'p_value': p_value})
@@ -366,7 +366,7 @@ def analyze_results(paired_category_decoding, paired_pseudocategory_decoding):
     # plot_bias_accuracy_regression(pred_df, regression_df, path=os.path.join(fig_dir, 'bias_accuracy_mixed_model_regplot.pdf'))
 
     # category_bias_df = get_subject_level_category_results(pred_df)
-    
+
     # bias_category_est_df, bias_category_contrast_df = test_bias_category_dependence(category_bias_df)
     # bias_category_est_df.to_csv(os.path.join(data_dir, 'category_bias_estimates.csv'), index=False)
     # bias_category_contrast_df.to_csv(os.path.join(data_dir, 'category_bias_contrasts.csv'), index=False)
@@ -378,7 +378,7 @@ def analyze_results(paired_category_decoding, paired_pseudocategory_decoding):
     # if not os.path.exists(cm_dir):
     #     os.makedirs(cm_dir)
     # plot_confusion_matrices_by_model(pred_df, dir=cm_dir)
-    
+
     data_dir = os.path.join('outputs', 'paired_pseudocategory_decoding')
     pred_df = get_predictions(paired_pseudocategory_decoding)
     bias_df = get_model_level_results(pred_df)
