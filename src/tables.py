@@ -101,6 +101,7 @@ def table4():
     f.close()
 
 def table5():
+    #\needswork: should index by name instead of [0], [1], and [2]
     f = open("figures/table5.tex", "w")
     f.write("\\begin{tabular}{lr@{\\hspace{3em}}c}\n")
     f.write("\\toprule\n")
@@ -183,6 +184,7 @@ def table6():
             float(cbc["97.5_ci"][idx])))
     f.write("\\textbf{Random effects} & &\\\\\n")
     #\needswork: I'm not sure the next three are correct.
+    #\needswork: should index by name instead of [0], [1], and [2]
     f.write("\\quad $\\sigma_{s}^2$ & %.2f & \\\\\n"%float(re["Var"][0]))
     f.write("\\quad $\\sigma_{m}^2$ & %.2f & \\\\\n"%float(re["Var"][1]))
     f.write("\\quad $\\sigma^2$ & %.2f & \\\\\n"%float(re["Var"][2]))
