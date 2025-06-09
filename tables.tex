@@ -1,0 +1,48 @@
+\documentclass{article}
+\usepackage{fullpage}
+\usepackage{booktabs}
+\usepackage{array}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+\begin{document}
+\begin{table}
+  \centering
+  \caption{Confounded accuracy (CA), unconfounded accuracy (UA), and bias in the object-category-decoding experiments.}
+  \label{tab:category-decoding-confounded-hp}
+  \input{figures/table2}
+\end{table}
+
+\begin{table}
+  \centering
+  \caption{Confounded accuracy (CA), unconfounded accuracy (UA) and bias in the pseudocategory-decoding experiments.}
+  \label{tab:pseudocategory-decoding-results}
+  \input{figures/table3}
+\end{table}
+
+\begin{table}
+  \caption{Results of hypothesis tests assessing the statistical significance of the bias affecting the estimated accuracy of each model.}
+  \label{tab:bias-hypothesis-tests}
+  \centering
+  \input{figures/table4}
+\end{table}
+
+\begin{table}
+  \caption{Results of the linear mixed-effects regression analysis assessing the change in bias relative to accuracy under the confound.}
+  \label{tab:bias-vs-confounded-lme}
+  \centering
+  \input{figures/table5}
+\end{table}
+
+\begin{table}
+  \centering
+  \caption{Results of the linear mixed-effects regression analysis assessing the dependence of the bias imparted by the confound on object category.}
+  \label{tab:category-bias-lme}
+  \input{figures/table6}
+\end{table}
+
+\begin{table}
+  \caption{Results of hypothesis tests assessing if each model could decode pseudocategory identity with above chance accuracy under confounded and unconfounded evaluation procedures.}
+  \label{tab:pseudocategory-hypothesis-tests}
+  \centering
+  \input{figures/table7}
+\end{table}
+\end{document}

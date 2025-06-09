@@ -1,0 +1,7 @@
+#!/bin/bash
+mkdir figures
+rm -rf tables.{aux,log,pdf}
+venv/bin/python3 src/tables.py
+pdflatex tables
+pdflatex tables
+rm -rf tables.{aux,log}
