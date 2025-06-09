@@ -124,15 +124,15 @@ def table5():
     f.write("\\textbf{Random effects} & & \\\\\n")
     #\needswork: I'm not sure the next two are correct.
     f.write("\\quad $\\sigma^2_{m}$ & %.2f & [%.2f,  %.2f] \\\\\n"%(
-        float(re["Var"][0])
+        float(re["Var"][0]),
         float(ci["2.5 %"][0]),
         float(ci["97.5 %"][0])))
     f.write("\\quad $\\sigma^2_{s}$ & %.2f & [%.2f,  %.2f] \\\\\n"%(
-        float(re["Var"][1])
+        float(re["Var"][1]),
         float(ci["2.5 %"][1]),
         float(ci["97.5 %"][1])))
     f.write("\\quad $\\sigma^2$ & %.2f & [%.2f,  %.2f] \\\\\n"%(
-        float(re["Var"][2])
+        float(re["Var"][2]),
         float(ci["2.5 %"][2]),
         float(ci["97.5 %"][2])))
     f.write("\\bottomrule\n")
