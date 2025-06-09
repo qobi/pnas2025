@@ -115,12 +115,12 @@ def table5():
         float(fe["Estimate"][0]),
         fe["Sig"][0],
         float(fe["2.5_ci"][0]),
-        float(fe["97.5_ci"][0]))
+        float(fe["97.5_ci"][0])))
     f.write("\\quad $\\beta_{1}$ & %.2f\\rlap{\\textsuperscript{%s}} & [%.2f, %.2f] \\\\\n"%(
         float(fe["Estimate"][1]),
         fe["Sig"][1],
         float(fe["2.5_ci"][1]),
-        float(fe["97.5_ci"][1]))
+        float(fe["97.5_ci"][1])))
     f.write("\\textbf{Random effects} & & \\\\\n")
     #\needswork: I'm not sure the next two are correct.
     f.write("\\quad $\\sigma^2_{m}$ & %.2f & [%.2f,  %.2f] \\\\\n"%(
