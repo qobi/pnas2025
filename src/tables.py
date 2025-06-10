@@ -7,8 +7,7 @@ def denan(x):
         return ""
 
 def latexfloat(x):
-    return ("%.2f"%x).replace("-", "$-$", 1)
-
+    return ("%.2f"%float(x)).replace("-", "$-$", 1)
 
 def table2():
     f = open("figures/table2.tex", "w")
