@@ -45,8 +45,8 @@ CATEGORY_MAP = {0: 'Human Body', 1: 'Human Face', 2: 'Animal Body', 3: 'Animal F
 CATEGORY_ABBR_MAP = {0: 'HB', 1: 'HF', 2: 'AB', 3: 'AF', 4: 'NO', 5: 'AO'}
 
 def get_predictions(df):
-    # logits_cols = [col for col in df.columns if col.startswith('logit_')]
-    # df['target_pred'] = df[logits_cols].idxmax(axis=1).str.replace('logit_', '').astype(int)
+    logits_cols = [col for col in df.columns if col.startswith('logit_')]
+    df['target_pred'] = df[logits_cols].idxmax(axis=1).str.replace('logit_', '').astype(int)
     df['category'] = df['labels'].map(CATEGORY_MAP)
     df['category_pred'] = df['target_pred'].map(CATEGORY_MAP)
     df['correct'] = (df['target_pred'] == df['labels']).astype(int)
@@ -354,30 +354,30 @@ def analyze_results(paired_category_decoding, paired_pseudocategory_decoding):
     bias_df = get_model_level_results(pred_df)
     bias_df.to_csv(os.path.join(data_dir, 'category_decoding_bias_summary.csv'), index=False)
 
-    # plot_bias_boxplot_by_model_and_subject(pred_df, model_type='primary', path=os.path.join(fig_dir, 'category_decoding_bias_boxplot_by_primary_model_and_subject.pdf'))
+    plot_bias_boxplot_by_model_and_subject(pred_df, model_type='primary', path=os.path.join(fig_dir, 'category_decoding_bias_boxplot_by_primary_model_and_subject.pdf'))
     bias_test_df = test_bias_significance(pred_df, alpha=0.05)
     bias_test_df.to_csv(os.path.join(data_dir, 'category_decoding_bias_significance.csv'), index=False)
 
-    # fixef_df, ranef_df, confint_df, regression_df = fit_accuracy_bias_mixed_model(pred_df, n_iter=5)
-    # fixef_df.to_csv(os.path.join(data_dir, 'bias_accuracy_mixed_model_fixed_effects.csv'))
-    # ranef_df.to_csv(os.path.join(data_dir, 'bias_accuracy_mixed_model_random_effects.csv'))
-    # confint_df.to_csv(os.path.join(data_dir, 'bias_accuracy_mixed_model_confidence_intervals.csv'))
+    fixef_df, ranef_df, confint_df, regression_df = fit_accuracy_bias_mixed_model(pred_df, n_iter=5)
+    fixef_df.to_csv(os.path.join(data_dir, 'bias_accuracy_mixed_model_fixed_effects.csv'))
+    ranef_df.to_csv(os.path.join(data_dir, 'bias_accuracy_mixed_model_random_effects.csv'))
+    confint_df.to_csv(os.path.join(data_dir, 'bias_accuracy_mixed_model_confidence_intervals.csv'))
 
-    # plot_bias_accuracy_regression(pred_df, regression_df, path=os.path.join(fig_dir, 'bias_accuracy_mixed_model_regplot.pdf'))
+    plot_bias_accuracy_regression(pred_df, regression_df, path=os.path.join(fig_dir, 'bias_accuracy_mixed_model_regplot.pdf'))
 
-    # category_bias_df = get_subject_level_category_results(pred_df)
+    category_bias_df = get_subject_level_category_results(pred_df)
 
-    # bias_category_est_df, bias_category_contrast_df = test_bias_category_dependence(category_bias_df)
-    # bias_category_est_df.to_csv(os.path.join(data_dir, 'category_bias_estimates.csv'), index=False)
-    # bias_category_contrast_df.to_csv(os.path.join(data_dir, 'category_bias_contrasts.csv'), index=False)
+    bias_category_est_df, bias_category_contrast_df = test_bias_category_dependence(category_bias_df)
+    bias_category_est_df.to_csv(os.path.join(data_dir, 'category_bias_estimates.csv'), index=False)
+    bias_category_contrast_df.to_csv(os.path.join(data_dir, 'category_bias_contrasts.csv'), index=False)
 
-    # plot_bias_accuracy_scatter_by_category(category_bias_df, path=os.path.join(fig_dir, 'bias_accuracy_scatter_by_category.pdf'))
+    plot_bias_accuracy_scatter_by_category(category_bias_df, path=os.path.join(fig_dir, 'bias_accuracy_scatter_by_category.pdf'))
 
-    # plot_bias_accuracy_point_by_category(category_bias_df, path=os.path.join(fig_dir, 'bias_accuracy_point_by_category.pdf'))
-    # cm_dir = os.path.join(fig_dir, 'confusion_matrices')
-    # if not os.path.exists(cm_dir):
-    #     os.makedirs(cm_dir)
-    # plot_confusion_matrices_by_model(pred_df, dir=cm_dir)
+    plot_bias_accuracy_point_by_category(category_bias_df, path=os.path.join(fig_dir, 'bias_accuracy_point_by_category.pdf'))
+    cm_dir = os.path.join(fig_dir, 'confusion_matrices')
+    if not os.path.exists(cm_dir):
+        os.makedirs(cm_dir)
+    plot_confusion_matrices_by_model(pred_df, dir=cm_dir)
 
     data_dir = os.path.join('outputs', 'paired_pseudocategory_decoding')
     pred_df = get_predictions(paired_pseudocategory_decoding)
