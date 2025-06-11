@@ -98,7 +98,7 @@ def table4():
             latexfloat(cdbsi["lower_bound"][idx]),
             latexfloat(cdbsi["upper_bound"][idx])))
     f.write("\\bottomrule\n")
-    f.write("\\multicolumn{3}{p{0.7\\linewidth}}{\\small `***' indicates that the estimate is different from 1 at the $p < 0.001$ significance level.}\n")
+    f.write("\\multicolumn{3}{p{0.7\\linewidth}}{\\small `***' indicates that the estimate is different from zero at the $p < 0.001$ significance level.}\n")
     f.write("\\end{tabular}\n")
     f.close()
 
@@ -112,9 +112,30 @@ def table5():
     f.write("\\textbf{95\\% CI} \\\\\n")
     f.write("\\midrule\n")
     f.write("\\textbf{Fixed effects} & & \\\\\n")
-    f.write("\\quad $\\beta_{0}$ & %s\\rlap{\\textsuperscript{%s}} & [%s, %s] \\\\\n"%(
+    # qobi wrote:
+    # The original ms did not have significance stars for beta_0 from equation
+    # [1] in Table 5. I extracted them from the "Sig" field in
+    # bias_accuracy_mixed_model_fixed_effects.csv and put them in my generated
+    # tables. I don't know if this is the right thing to do. I also don't know
+    # if this is difference from zero or one. Does it make sense to include a
+    # confidence interval for beta_0 without significance stars?
+    #
+    # Jack responded:
+    # I struggled with this one; for the significance test, the beta_0 term is
+    # relative to 0; however, its difficult to determine what beta_0 should
+    # actually be compared to. For a model performing at chance, there should
+    # be no bias due to the confound; so there's an argument for the null value
+    # for beta_0 to be chance accuracy. However, maybe it should be a bit
+    # higher, and bias only sets in after some accuracy threshold is crossed. As
+    # a compromise, I decided to not include any significance stars, but still
+    # include the confidence interval since it indicates an upper limit on
+    # accuracy before bias begins to affect the estimate i.e. the most accurate
+    # a model can be under the confound without being affected by
+    # stimulus-specific bias.
+    #f.write("\\quad $\\beta_{0}$ & %s\\rlap{\\textsuperscript{%s}} & [%s, %s] \\\\\n"%(
+    f.write("\\quad $\\beta_{0}$ & %s & [%s, %s] \\\\\n"%(
         latexfloat(fe["Estimate"][0]),
-        fe["Sig"][0],
+        #fe["Sig"][0],
         latexfloat(ci["2.5 %"][3]),
         latexfloat(ci["97.5 %"][3])))
     f.write("\\quad $\\beta_{1}$ & %s\\rlap{\\textsuperscript{%s}} & [%s, %s] \\\\\n"%(
@@ -123,6 +144,7 @@ def table5():
         latexfloat(ci["2.5 %"][4]),
         latexfloat(ci["97.5 %"][4])))
     f.write("\\textbf{Random effects} & & \\\\\n")
+    #\needswork: We have confidence intervals here but not table6.
     f.write("\\quad $\\sigma^2_{m}$ & %s & [%s,  %s] \\\\\n"%(
         latexfloat(re["Var"][0]),
         latexfloat(ci["2.5 %"][0]),
@@ -136,7 +158,7 @@ def table5():
         latexfloat(ci["2.5 %"][2]),
         latexfloat(ci["97.5 %"][2])))
     f.write("\\bottomrule\n")
-    f.write("\\multicolumn{3}{p{0.7\\linewidth}}{\\small `***' indicates that the estimate is different from 1 at the $p < 0.001$ significance level.}\n")
+    f.write("\\multicolumn{3}{p{0.7\\linewidth}}{\\small `***' indicates that the estimate is different from zero at the $p < 0.001$ significance level.}\n")
     f.write("\\end{tabular}\n")
     f.close()
 
@@ -154,6 +176,8 @@ def table6():
                       "Human Face",
                       "Natural Object"]:
         idx = list(cbe["category"]).index(parameter)
+        # We have confidence intervals but no significance stars.
+        # See the note in table5.
         f.write("\\quad %s & %s & [%s, %s] \\\\\n"%(
             cbe["category"][idx],
             latexfloat(cbe["Estimate"][idx]),
@@ -184,6 +208,7 @@ def table6():
             latexfloat(cbc["97.5_ci"][idx])))
     f.write("\\textbf{Random effects} & &\\\\\n")
     #\needswork: should index by name instead of [0], [1], and [2]
+    #\needswork: We have confidence intervals in table5 but not here.
     f.write("\\quad $\\sigma_{s}^2$ & %s & \\\\\n"%latexfloat(cbre["Var"][0]))
     f.write("\\quad $\\sigma_{m}^2$ & %s & \\\\\n"%latexfloat(cbre["Var"][1]))
     f.write("\\quad $\\sigma^2$ & %s & \\\\\n"%latexfloat(cbre["Var"][2]))
