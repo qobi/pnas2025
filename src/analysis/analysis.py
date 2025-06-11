@@ -77,11 +77,11 @@ def get_model_level_results(df):
     df = get_subject_level_results(df)
     df = df.groupby('model').agg(
         confounded_test=('confounded_test', 'mean'),
-        confounded_test_std=('confounded_test_std', 'std'),
+        confounded_test_std=('confounded_test', 'std'),
         unconfounded_test=('unconfounded_test', 'mean'),
-        unconfounded_test_std=('unconfounded_test_std', 'std'),
+        unconfounded_test_std=('unconfounded_test', 'std'),
         bias=('bias', 'mean'),
-        bias_std=('bias_std', 'std')
+        bias_std=('bias', 'std')
     ).reset_index()
     return df
 
