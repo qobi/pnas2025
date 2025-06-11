@@ -224,8 +224,8 @@ def test_bias_category_dependence(bias_df):
     lme_model = Lmer(data=bias_df, formula=formula)
     lme_model.fit(factors={'category': list(CATEGORY_MAP.values())}, summary=False, verbose=False)
     bias_est_df, bias_contrast_df = lme_model.post_hoc(marginal_vars='category', p_adjust='holm')
-
-    return bias_est_df, bias_contrast_df
+    ranef_df = lme_model.ranef_var
+    return bias_est_df, ranef_df, bias_contrast_df
 
 def plot_bias_accuracy_scatter_by_category(bias_df, path=None):
     g = sns.FacetGrid(bias_df, col='category', col_wrap=3, aspect = 1.9, col_order = list(CATEGORY_MAP.values()))
@@ -367,8 +367,9 @@ def analyze_results(paired_category_decoding, paired_pseudocategory_decoding):
 
     category_bias_df = get_subject_level_category_results(pred_df)
 
-    bias_category_est_df, bias_category_contrast_df = test_bias_category_dependence(category_bias_df)
+    bias_category_est_df, bias_category_ranef_df, bias_category_contrast_df = test_bias_category_dependence(category_bias_df)
     bias_category_est_df.to_csv(os.path.join(data_dir, 'category_bias_estimates.csv'), index=False)
+    bias_category_ranef_df.to_csv(os.path.join(data_dir, 'category_bias_random_effects.csv'), index=False)
     bias_category_contrast_df.to_csv(os.path.join(data_dir, 'category_bias_contrasts.csv'), index=False)
 
     plot_bias_accuracy_scatter_by_category(category_bias_df, path=os.path.join(fig_dir, 'bias_accuracy_scatter_by_category.pdf'))

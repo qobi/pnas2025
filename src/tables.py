@@ -103,7 +103,7 @@ def table4():
     f.close()
 
 def table5():
-    #\needswork: should index by name instead of [0], [1], and [2]
+    #\needswork: should index by name instead of [0], [1], [2], [3], and [4].
     f = open("figures/table5.tex", "w")
     f.write("\\begin{tabular}{lr@{\\hspace{3em}}c}\n")
     f.write("\\toprule\n")
@@ -112,19 +112,17 @@ def table5():
     f.write("\\textbf{95\\% CI} \\\\\n")
     f.write("\\midrule\n")
     f.write("\\textbf{Fixed effects} & & \\\\\n")
-    #\needswork: I'm not sure the next two are correct.
     f.write("\\quad $\\beta_{0}$ & %s\\rlap{\\textsuperscript{%s}} & [%s, %s] \\\\\n"%(
         latexfloat(fe["Estimate"][0]),
         fe["Sig"][0],
-        latexfloat(fe["2.5_ci"][0]),
-        latexfloat(fe["97.5_ci"][0])))
+        latexfloat(ci["2.5 %"][3]),
+        latexfloat(ci["97.5 %"][3])))
     f.write("\\quad $\\beta_{1}$ & %s\\rlap{\\textsuperscript{%s}} & [%s, %s] \\\\\n"%(
         latexfloat(fe["Estimate"][1]),
         fe["Sig"][1],
-        latexfloat(fe["2.5_ci"][1]),
-        latexfloat(fe["97.5_ci"][1])))
+        latexfloat(ci["2.5 %"][4]),
+        latexfloat(ci["97.5 %"][4])))
     f.write("\\textbf{Random effects} & & \\\\\n")
-    #\needswork: I'm not sure the next two are correct.
     f.write("\\quad $\\sigma^2_{m}$ & %s & [%s,  %s] \\\\\n"%(
         latexfloat(re["Var"][0]),
         latexfloat(ci["2.5 %"][0]),
@@ -185,11 +183,10 @@ def table6():
             latexfloat(cbc["2.5_ci"][idx]),
             latexfloat(cbc["97.5_ci"][idx])))
     f.write("\\textbf{Random effects} & &\\\\\n")
-    #\needswork: I'm not sure the next three are correct.
     #\needswork: should index by name instead of [0], [1], and [2]
-    f.write("\\quad $\\sigma_{s}^2$ & %s & \\\\\n"%latexfloat(re["Var"][0]))
-    f.write("\\quad $\\sigma_{m}^2$ & %s & \\\\\n"%latexfloat(re["Var"][1]))
-    f.write("\\quad $\\sigma^2$ & %s & \\\\\n"%latexfloat(re["Var"][2]))
+    f.write("\\quad $\\sigma_{s}^2$ & %s & \\\\\n"%latexfloat(cbre["Var"][0]))
+    f.write("\\quad $\\sigma_{m}^2$ & %s & \\\\\n"%latexfloat(cbre["Var"][1]))
+    f.write("\\quad $\\sigma^2$ & %s & \\\\\n"%latexfloat(cbre["Var"][2]))
     f.write("\\bottomrule\n")
     f.write("\\multicolumn{3}{p{0.85\\linewidth}}{\\small `*', `**', and `***' indicate that the estimate is different from zero at the $p < 0.05$, $p < 0.01$, and $p < 0.001$ significance levels, respectively.}\n")
     f.write("\\end{tabular}\n")
@@ -243,6 +240,7 @@ fe = pandas.read_csv("outputs/paired_category_decoding/bias_accuracy_mixed_model
 re = pandas.read_csv("outputs/paired_category_decoding/bias_accuracy_mixed_model_random_effects.csv")
 pdas = pandas.read_csv("outputs/paired_pseudocategory_decoding/pseudocategory_decoding_accuracy_significance.csv")
 pdbs = pandas.read_csv("outputs/paired_pseudocategory_decoding/pseudocategory_decoding_bias_summary.csv")
+cbre = pandas.read_csv("outputs/paired_category_decoding/category_bias_random_effects.csv")
 
 primary_models = ["LDA",
                   "ADCNN",
