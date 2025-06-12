@@ -43,7 +43,7 @@ models:
     search_space:
       optimizer:
         - !eval torch.optim.AdamW
-      max_epochs: 30
+      max_epochs: 50
       batch_size: [128]
       lr: [0.0001, 0.001, 0.01]
       weight_decay: [0.0001, 0.001, 0.01, 0.1]
@@ -67,7 +67,7 @@ models:
     search_space:
       optimizer:
         - !eval torch.optim.AdamW
-      max_epochs: 30
+      max_epochs: 50
       batch_size: [128]
       lr: [0.0001, 0.001, 0.01]
       weight_decay: [0.0001, 0.001, 0.01, 0.1]
@@ -93,7 +93,7 @@ models:
     search_space:
       optimizer:
         - !eval torch.optim.AdamW
-      max_epochs: 30
+      max_epochs: 50
       batch_size: [128]
       lr: [0.0001, 0.001, 0.01]
       weight_decay: [0.0001, 0.001, 0.01, 0.1]
@@ -123,7 +123,7 @@ models:
     search_space:
       optimizer:
         - !eval torch.optim.AdamW
-      max_epochs: 30
+      max_epochs: 50
       batch_size: [32]
       lr: [0.0001, 0.001, 0.01]
       weight_decay: [0.0001, 0.001, 0.01, 0.1]
@@ -150,7 +150,7 @@ models:
     search_space:
       optimizer:
         - !eval torch.optim.AdamW
-      max_epochs: 30
+      max_epochs: 50
       batch_size: [32]
       lr: [0.0001, 0.001, 0.01]
       weight_decay: [0.0001, 0.001, 0.01, 0.1]
@@ -175,7 +175,7 @@ models:
     search_space:
       optimizer:
         - !eval torch.optim.AdamW
-      max_epochs: 30
+      max_epochs: 50
       batch_size: [128]
       lr: [0.0001, 0.001, 0.01]
       weight_decay: [0.0001, 0.001, 0.01, 0.1]
@@ -205,7 +205,7 @@ models:
     search_space:
       optimizer:
         - !eval torch.optim.AdamW
-      max_epochs: 30
+      max_epochs: 50
       batch_size: [32]
       lr: [0.001]
       weight_decay: [0.1]
@@ -235,7 +235,7 @@ models:
     search_space:
       optimizer:
         - !eval torch.optim.AdamW
-      max_epochs: 30
+      max_epochs: 50
       batch_size: [128]
       lr: [0.0001, 0.001, 0.01]
       weight_decay: [0.0001, 0.001, 0.01, 0.1]
@@ -301,7 +301,7 @@ models:
     search_space:
       optimizer:
         - !eval torch.optim.AdamW
-      max_epochs: 30
+      max_epochs: 50
       batch_size: [128]
       lr: [0.0001, 0.001, 0.01]
       weight_decay: [0.0001, 0.001, 0.01]
@@ -326,7 +326,7 @@ models:
     search_space:
       optimizer:
         - !eval torch.optim.AdamW
-      max_epochs: 30
+      max_epochs: 100
       batch_size: [128]
       lr: [0.0001, 0.001, 0.01]
       weight_decay: [0.0001, 0.001, 0.01]
@@ -351,7 +351,7 @@ models:
     search_space:
       optimizer:
         - !eval torch.optim.AdamW
-      max_epochs: 30
+      max_epochs: 100
       batch_size: [128]
       lr: [0.0001, 0.001, 0.01]
       weight_decay: [0.0001, 0.001, 0.01]
