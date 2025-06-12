@@ -144,19 +144,10 @@ def table5():
         latexfloat(ci["2.5 %"][4]),
         latexfloat(ci["97.5 %"][4])))
     f.write("\\textbf{Random effects} & & \\\\\n")
-    #\needswork: We have confidence intervals here but not table6.
-    f.write("\\quad $\\sigma^2_{m}$ & %s & [%s,  %s] \\\\\n"%(
-        latexfloat(re["Var"][0]),
-        latexfloat(ci["2.5 %"][0]),
-        latexfloat(ci["97.5 %"][0])))
-    f.write("\\quad $\\sigma^2_{s}$ & %s & [%s,  %s] \\\\\n"%(
-        latexfloat(re["Var"][1]),
-        latexfloat(ci["2.5 %"][1]),
-        latexfloat(ci["97.5 %"][1])))
-    f.write("\\quad $\\sigma^2$ & %s & [%s,  %s] \\\\\n"%(
-        latexfloat(re["Var"][2]),
-        latexfloat(ci["2.5 %"][2]),
-        latexfloat(ci["97.5 %"][2])))
+    # Removed confidence intervals here since we don't have them in Table 6.
+    f.write("\\quad $\\sigma^2_{m}$ & %s & \\\\\n"%(latexfloat(re["Var"][0])))
+    f.write("\\quad $\\sigma^2_{s}$ & %s & \\\\\n"%(latexfloat(re["Var"][1])))
+    f.write("\\quad $\\sigma^2$ & %s & \\\\\n"%(latexfloat(re["Var"][2])))
     f.write("\\bottomrule\n")
     f.write("\\multicolumn{3}{p{0.7\\linewidth}}{\\small `***' indicates that the estimate is different from zero at the $p < 0.001$ significance level.}\n")
     f.write("\\end{tabular}\n")
@@ -208,7 +199,6 @@ def table6():
             latexfloat(cbc["97.5_ci"][idx])))
     f.write("\\textbf{Random effects} & &\\\\\n")
     #\needswork: should index by name instead of [0], [1], and [2]
-    #\needswork: We have confidence intervals in table5 but not here.
     f.write("\\quad $\\sigma_{s}^2$ & %s & \\\\\n"%latexfloat(cbre["Var"][0]))
     f.write("\\quad $\\sigma_{m}^2$ & %s & \\\\\n"%latexfloat(cbre["Var"][1]))
     f.write("\\quad $\\sigma^2$ & %s & \\\\\n"%latexfloat(cbre["Var"][2]))
