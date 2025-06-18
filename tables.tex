@@ -2,9 +2,13 @@
 \usepackage{fullpage}
 \usepackage{booktabs}
 \usepackage{array}
+\usepackage{graphics}
+\DeclareGraphicsExtensions{.pdf}
+\graphicspath{{figures/}{figures/confusion_matrices/}}
 \newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
 \begin{document}
 \setcounter{table}{1}
+\setcounter{figure}{2}
 \begin{table}
   \centering
   \caption{Confounded accuracy (CA), unconfounded accuracy (UA), and bias in the object-category-decoding experiments.}
@@ -19,12 +23,27 @@
   \input{figures/table3}
 \end{table}
 
+\begin{figure}
+  \centering
+  \resizebox{\textwidth}{!}{\includegraphics{category_decoding_bias_boxplot_by_primary_model_and_subject}}
+    \caption{\textbf{Category-decoding accuracy bias by model and subject.} In our experiments, the bias in accuracy due to the confound is consistently positive across all models and subjects. We can conclude from this that the presence of bias is systematic, and does not depend on extraneous variables, such as model architecture or subject. Moreover, since the interquartile range of the bias for each subject rarely includes zero, this indicates that decoding accuracy is overestimated in over 75\% of all cross-validation folds. This consistency is even more significant than it may appear as, for each fold, the unconfounded estimate of accuracy is derived from responses to only one stimulus per category, and consequently is subject to a high degree of variability.}
+  \label{fig:accuracy-bias-results}
+\end{figure}
+
 \begin{table}
   \caption{Results of hypothesis tests assessing the statistical significance of the bias affecting the estimated accuracy of each model.}
   \label{tab:bias-hypothesis-tests}
   \centering
   \input{figures/table4}
 \end{table}
+
+\begin{figure}
+  \centering
+  \resizebox{\textwidth}{!}{\includegraphics{bias_accuracy_mixed_model_regplot}}
+  \caption{\textbf{Absolute bias vs.\ confounded accuracy.}
+   When the confound is present, the greater the estimated accuracy of a model, the more it has been overestimated. This is indicated by the positive slope of the linear mixed-effects model we fit to the data. The slope of the line indicates that, for every 1\% increase in confounded accuracy, the unconfounded accuracy is overestimated by approximately 0.24\%. The 95\% confidence interval was obtained using a bootstrapped resampling procedure with 500 iterations.}
+  \label{fig:bias-vs-confounded-accuracy}
+\end{figure}
 
 \begin{table}
   \caption{Results of the linear mixed-effects regression analysis assessing the change in bias relative to accuracy under the confound.}
@@ -33,12 +52,28 @@
   \input{figures/table5}
 \end{table}
 
+\begin{figure}
+  \centering
+  \resizebox{\textwidth}{!}{\includegraphics{LDA_confusion_matrices}}
+  \caption{\textbf{Confounded vs.\ unconfounded confusion matrices for the LDA model.}
+  Under the confound (left), the Artificial Object and Natural Object categories appear relatively separable, with both classified correctly more often than they were misclassified as each other. However, in the absence of the confound (middle), they are almost misclassified as each other as often as they are correctly classified. The difference between the two confusion matrices (right) clearly shows that each category achieves a lower classification rate when the confound is not present.}{}
+  \label{fig:confounded-vs-unconfounded-confusion-matrix}
+\end{figure}
+
 \begin{table}
   \centering
   \caption{Results of the linear mixed-effects regression analysis assessing the dependence of the bias imparted by the confound on object category.}
   \label{tab:category-bias-lme}
   \input{figures/table6}
 \end{table}
+
+\begin{figure}
+  \centering
+  \resizebox{\textwidth}{!}{\includegraphics{bias_accuracy_point_by_category}}
+  \caption{\textbf{Mean unconfounded accuracy and bias over all models by object category.} When the confound is absent, the less often models were able to correctly decode object categories, the more the accuracy on that category tended to be overestimated when the confound was present. This indicates that the difficulty of decoding the hardest object categories has been substantially underestimated in the literature.
+  \vspace{4em}}
+  \label{fig:category-bias-accuracy}
+\end{figure}
 
 \begin{table}
   \caption{Results of hypothesis tests assessing if each model could decode pseudocategory identity with above chance accuracy under confounded and unconfounded evaluation procedures.}
