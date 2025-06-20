@@ -203,7 +203,7 @@ def table6():
     f.write("\\quad $\\sigma_{m}^2$ & %s & \\\\\n"%latexfloat(cbre["Var"][1]))
     f.write("\\quad $\\sigma^2$ & %s & \\\\\n"%latexfloat(cbre["Var"][2]))
     f.write("\\bottomrule\n")
-    f.write("\\multicolumn{3}{p{0.85\\linewidth}}{\\small `*', `**', and `***' indicate that the estimate is different from zero at the $p < 0.05$, $p < 0.01$, and $p < 0.001$ significance levels, respectively.}\n")
+    f.write("\\multicolumn{3}{p{0.85\\linewidth}}{\\small `***' indicates that the estimate is different from zero at the $p < 0.001$ significance level.}\n")
     f.write("\\end{tabular}\n")
     f.close()
 
