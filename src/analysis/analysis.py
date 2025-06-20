@@ -296,7 +296,7 @@ def plot_confusion_matrices_by_model(df, dir=False):
 
         sns.heatmap(confounded_cm, ax=ax[0], annot=confounded_cm.map(lambda x: f"${x:.2f}$"), fmt='', cmap='viridis', cbar=False, vmin=vmin, vmax=vmax)
         sns.heatmap(unconfounded_cm, ax=ax[1], annot=unconfounded_cm.map(lambda x: f"${x:.2f}$"), fmt='', cmap='viridis', cbar=False, vmin=vmin, vmax=vmax)
-        sns.heatmap(unconfounded_cm - confounded_cm, ax=ax[2], annot=unconfounded_cm.sub(confounded_cm).map(lambda x: f"${x:.2f}$"), fmt='', cmap='coolwarm', cbar=False)
+        sns.heatmap(confounded_cm - unconfounded_cm, ax=ax[2], annot=confounded_cm.sub(unconfounded_cm).map(lambda x: f"${x:.2f}$"), fmt='', cmap='coolwarm', cbar=False)
 
         for i in range(3):
             ax[i].set_xticklabels(CATEGORY_ABBR_MAP.values(), rotation=45, horizontalalignment='right', fontsize=14)
