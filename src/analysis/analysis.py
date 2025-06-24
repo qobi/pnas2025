@@ -2,9 +2,10 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-from scipy.stats import t, ttest_1samp
+from scipy.stats import t, ttest_1samp, norm
 from statsmodels.stats.multitest import multipletests
 from pymer4.models import Lmer
+import rpy2.robjects as ro
 from tqdm.auto import tqdm
 import os
 import warnings
@@ -156,34 +157,33 @@ def test_bias_significance(df, alpha=0.05):
 
     bias_test_df = pd.DataFrame(bias_test_df)
 
-    _, p_value_corrected, _, alpha_adjusted = multipletests(bias_test_df['p_value'], alpha=alpha, method='holm')
+    _, p_value_corrected, _, _ = multipletests(bias_test_df['p_value'], alpha=alpha, method='holm')
     bias_test_df['p_value_corrected'] = p_value_corrected
+    bias_test_df['alpha_adjusted'] = alpha / (bias_test_df['p_value'].sort_values(ascending=False).index + 1)
     bias_test_df['significance'] = bias_test_df['p_value_corrected'].apply(lambda x: '***' if x < 0.001 else '**' if x < 0.01 else '*' if x < 0.05 else '')
-    bias_test_df['lower_bound'] = bias_test_df['estimate'] - bias_test_df['standard_error'] * t.ppf(1 - alpha_adjusted / 2, bias_test_df['df'])
-    bias_test_df['upper_bound'] = bias_test_df['estimate'] + bias_test_df['standard_error'] * t.ppf(1 - alpha_adjusted / 2, bias_test_df['df'])
+    bias_test_df['lower_bound'] = bias_test_df['estimate'] - bias_test_df['standard_error'] * t.ppf(1 - bias_test_df['alpha_adjusted'] / 2, bias_test_df['df'])
+    bias_test_df['upper_bound'] = bias_test_df['estimate'] + bias_test_df['standard_error'] * t.ppf(1 - bias_test_df['alpha_adjusted'] / 2, bias_test_df['df'])
     return bias_test_df
 
-def fit_accuracy_bias_mixed_model(df, n_iter=500):
+def fit_accuracy_bias_mixed_model(df):
     df = get_subject_level_results(df)
     formula = 'bias ~ confounded_test + (1 | model) + (1 | subject)'
     model = Lmer(formula, data=df)
     model.fit(summary=False, verbose=False)
     regression_df = pd.DataFrame({'confounded_test': np.linspace(df['confounded_test'].min()//5 * 5, (df['confounded_test'].max()//5 + 1) * 5, len(df))})
-    regression_df['bias'] = model.predict(regression_df, use_rfx=False)
 
-    confintervals = []
-    for _ in tqdm(range(n_iter), desc='Bootstrapping confidence intervals', unit='iteration'):
-        sample_df = df.sample(frac=1, replace=True).reset_index(drop=True)
-        boot_model = Lmer(formula, data=sample_df)
-        boot_model.fit(summarize=False, verbose=False)
-        confintervals.append(boot_model.predict(regression_df, use_rfx=False))
-    confintervals = np.array(confintervals)
-    regression_df['lower_bound'] = np.percentile(confintervals, 2.5, axis=0)
-    regression_df['upper_bound'] = np.percentile(confintervals, 97.5, axis=0)
+    X = np.column_stack((np.ones_like(regression_df['confounded_test'].values), regression_df['confounded_test'].values))
+    regression_df['bias'] = X @ model.coefs.loc[:, 'Estimate'].values
+    vcov_beta = np.array(ro.r['as.matrix'](ro.r['vcov'](model.model_obj)))
+
+    regression_df['se'] = np.sqrt(np.sum(X @ vcov_beta * X, axis=1))
+    satterwaite_df = model.coefs.loc['confounded_test', 'DF']
+    regression_df['lower_bound'] = regression_df['bias'] - t.ppf(1 - 0.05/2, satterwaite_df) * regression_df['se']
+    regression_df['upper_bound'] = regression_df['bias'] + t.ppf(1 - 0.05/2, satterwaite_df) * regression_df['se']
 
     fixef_df = model.summary()
     ranef_df = model.ranef_var
-    confint_df = model.confint(level=0.95, method='boot')
+    confint_df = model.confint(level=0.95, method='Wald')
 
     return fixef_df, ranef_df, confint_df, regression_df
 
@@ -358,7 +358,7 @@ def analyze_results(paired_category_decoding, paired_pseudocategory_decoding):
     bias_test_df = test_bias_significance(pred_df, alpha=0.05)
     bias_test_df.to_csv(os.path.join(data_dir, 'category_decoding_bias_significance.csv'), index=False)
 
-    fixef_df, ranef_df, confint_df, regression_df = fit_accuracy_bias_mixed_model(pred_df, n_iter=5)
+    fixef_df, ranef_df, confint_df, regression_df = fit_accuracy_bias_mixed_model(pred_df)
     fixef_df.to_csv(os.path.join(data_dir, 'bias_accuracy_mixed_model_fixed_effects.csv'))
     ranef_df.to_csv(os.path.join(data_dir, 'bias_accuracy_mixed_model_random_effects.csv'))
     confint_df.to_csv(os.path.join(data_dir, 'bias_accuracy_mixed_model_confidence_intervals.csv'))
